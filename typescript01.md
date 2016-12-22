@@ -115,3 +115,141 @@ notSure = false; // okay, definitely a Boolean
 let u: undefined = undefined;
 let n: null = null;
 ```
+
+
+### Interfaces
+인터페이스는 주로 타입 검사를 위해서 활용된다. 인터페이스는 변수 조합의 이름을 정의하여, 이렇게 정의된 변수의 조합은 항상 함께 사용된다. 참고로 자바스크립트로 변환하면 인터페이스는 사라진다. 인터페이스는 개발 단계에서 주로 사용되는 것이 목적이다.
+다음 코드는 함수 인자의 타입을 체크하기 위한 간단한 인터페이스이다.
+```typescript
+// Here we define our Food interface, its properties, and their types.
+interface Food {
+    name: string;
+    calories: number;
+}
+
+// We tell our function to expect an object that fulfills the Food interface. 
+// This way we know that the properties we need will always be available.
+function speak(food: Food): void{
+  console.log("Our " + food.name + " has " + food.calories + " calories.");
+}
+
+// We define an object that has all of the properties the Food interface expects.
+// Notice that types will be inferred automatically.
+var ice_cream = {
+  name: "ice cream", 
+  calories: 200
+}
+
+speak(ice_cream);
+```
+
+위 코드에서 프로퍼티의 순서는 중요하지 않다. 단지 해당 프로퍼티가 있는지, 그리고 타입이 맞는지 체크하는 것에 초점을 맞춘다. 만약 아래코드처럼 타입이 다르다면(프로퍼티가 없거나 혹은 프로퍼티 네임이 다르다면) 컴파일러에서 에러가 날 것이다.
+```typescript
+interface Food {
+    name: string;
+    calories: number;
+}
+
+function speak(food: Food): void{
+  console.log("Our " + food.name + " has " + food.calories + " grams.");
+}
+
+// We've made a deliberate mistake and name is misspelled as nmae.
+var ice_cream = {
+  nmae: "ice cream", 
+  calories: 200
+}
+
+speak(ice_cream);
+```
+```shell
+main.ts(16,7): error TS2345: Argument of type '{ nmae: string; calories: number; } 
+is not assignable to parameter of type 'Food'. 
+Property 'name' is missing in type '{ nmae: string; calories: number; }'.
+```
+
+하지만 인터페이스에서 모든 프로퍼티가 필요하지 않을 수 있다. 이 때, Optional 프로퍼티를 사용한다. Optional 프로퍼티는 선택적으로 구현하는 프로퍼티를 정의할 때 사용한다. 프로퍼티 식별자 뒤에  ?를 붙인다.
+
+```typescript
+interface SquareConfig {
+    color?: string;
+    width?: number;
+}
+
+function createSquare(config: SquareConfig): { color: string; area: number } {
+    let newSquare = {color: "white", area: 100};
+    if (config.color) {
+        // Error: Property 'color' does not exist on type 'SquareConfig'
+        newSquare.color = config.color;
+    }
+    if (config.width) {
+        newSquare.area = config.width * config.width;
+    }
+    return newSquare;
+}
+
+let mySquare = createSquare({color: "black"});
+```
+
+그리고 다음 코드 같이 Java나 C#의 Interface처럼 사용할 수 있다.
+
+```typescript
+interface ClockInterface {
+    currentTime: Date;
+    setTime(d: Date);
+}
+
+class Clock implements ClockInterface {
+    currentTime: Date;
+    setTime(d: Date) {
+        this.currentTime = d;
+    }
+    constructor(h: number, m: number) { }
+}
+```
+
+-------------------------------------------------
+
+### Class
+TypeScript는 상속, 추상 클래스, 인터페이스 구현, setter / getter 등을 포함하여 C++, Java와 유사한 기능을 제공한다. ES6에도 class 키워드를 제공하지만 typescript가 좀더 엄격한 면이 있다.
+
+```typescript
+class Animal {
+    name: string;
+    constructor(theName: string) { this.name = theName; }
+    move(distanceInMeters: number = 0) {
+        console.log(`${this.name} moved ${distanceInMeters}m.`);
+    }
+}
+
+class Snake extends Animal {
+    constructor(name: string) { super(name); }
+    move(distanceInMeters = 5) {
+        console.log("Slithering...");
+        super.move(distanceInMeters);
+    }
+}
+
+class Horse extends Animal {
+    constructor(name: string) { super(name); }
+    move(distanceInMeters = 45) {
+        console.log("Galloping...");
+        super.move(distanceInMeters);
+    }
+}
+
+let sam = new Snake("Sammy the Python");
+let tom: Animal = new Horse("Tommy the Palomino");
+
+sam.move();
+tom.move(34);
+```
+
+```shell
+Slithering...
+Sammy the Python moved 5m.
+Galloping...
+Tommy the Palomino moved 34m.
+```
+
+위 코드처럼 typescript의 클래스는 상속을 지원하며 자식 클래스는 베이스 클래스의 생성자를 호출하기 위한 super() 함수를 사용한다.
