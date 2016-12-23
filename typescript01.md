@@ -253,3 +253,24 @@ Tommy the Palomino moved 34m.
 ```
 
 위 코드처럼 typescript의 클래스는 상속을 지원하며 자식 클래스는 베이스 클래스의 생성자를 호출하기 위한 super() 함수를 사용한다.
+
+
+---------------------------
+
+### Generics
+Generics는 동일한 함수가 다양한 타입의 인자를 받을 수 있도록 해주는 템플릿이다. Generics을 사용하면 인자로 들어오거나 return하는 변수 유형을 유지할수 있어서 any 타입을 사용하는 것보다 낫다. 
+```typescript
+// any type
+function identityAny(arg: any): any {
+    return arg;
+}
+
+// Generic
+function identity<T>(arg: T): T {
+    return arg;
+}
+let output = identity<string>("myString");  // type of output will be 'string'
+let output2 = identity(123);  // type of output will be 'number'
+```
+output 변수로 함수를 호출했을 때, 수동으로 타입을 string으로 명시했다. 그리고 output2 변수처럼 수동으로 타입을 명시하지 않아도 코드는 돌아간다. 컴파일러가 전달된 인자를 확인하기 때문이다. 하지만 코드가 복잡해지는 경우, 컴파일러가 제대로 타입을 추측하지 못할 수 있기 때문에 명시해주는 편이 좋다.
+
